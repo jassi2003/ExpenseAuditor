@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Expense Tracker</title>
+  <link rel="stylesheet" href="./stylesheets/loginStyle.css" />
+</head>
+
+<body>
+  <div class="parent">
+    <h2 class="title1">Expense Tracker</h2>
+
+    <form class="loginForm">
+      <h2 id="formTitle">Login</h2>
+
+      <label for="formEmail">Enter Email</label>
+      <input type="email" id="formEmail" placeholder="enter email" required />
+
+      <label for="formPass">Enter Password</label>
+      <input type="password" id="formPass" placeholder="enter password" required />
+
+      <button type="submit" id="loginBtn">Submit</button>
+
+      <p id="loginErrorMssg"></p>
+    </form>
+  </div>
+
+  <script type="module" src="./js/login.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bcryptjs@2.4.3/dist/bcrypt.min.js"></script>
+  <script type="module" src="./js/authLogin.js"></script>
+
+
+</body>
+</html>

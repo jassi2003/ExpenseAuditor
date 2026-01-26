@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Employee Panel</title>
+  <link rel="stylesheet" href="./stylesheets/empStyle.css" />
+</head>
+
+<body>
+
+  <div class="dashboard">
+
+    <div class="sidebar">
+      <h2 class="sidebarTitle">Employee</h2>
+
+      <button id="homeBtn" class="sideBtn active"> Home</button>
+      <button id="addBtn" class="sideBtn"> Add Expense</button>
+
+      <div class="sidebarFooter">
+        <button id="lgtBtn" class="logoutSideBtn">Logout</button>
+      </div>
+    </div>
+
+    <div class="parent">
+
+    <h2>Employee panel</h2>
+<div class="topRightControls">
+  <div id="currencySelector">
+    <label>Select Currency</label>
+    <select id="currencySelect">
+      <option value="INR">INR (₹)</option>
+      <option value="USD">USD ($)</option>
+      <option value="EUR">EUR (€)</option>
+      <option value="GBP">GBP (£)</option>
+    </select>
+  </div>
+
+  <button id="diagBtn" class="diagBtn">Run Diagnostic Console</button>
+</div>
+
+
+      <div id="addExpensePage" class="page visible">
+<form id="expenseForm">
+          
+          <label>Expense Title</label>
+          <input type="text" id="formTitle" placeholder="enter title">
+          <label for="">Select Currency</label>
+          <select id="inputCurrency">
+  <option value="INR">INR</option>
+  <option value="USD">USD</option>
+  <option value="EUR">EUR</option>
+  <option value="GBP">£ GBP</option>
+</select>
+
+<label>Enter Amount</label>
+<input
+  type="text"
+  id="formAmount"
+  placeholder="enter amount"
+  inputmode="numeric"
+  autocomplete="off"
+/>
+          <label>Select Date</label>
+          <input type="date" id="formDate" placeholder="enter date">
+
+          <label>Tags</label>
+          <input type="text" id="formTag" placeholder="enter Tags">
+
+          <label>Receipt (pdf)
+            <input id="formReceipt" type="file" accept="image/*,application/pdf" />
+          </label>
+
+          <!-- receipt preview box -->
+          <div id="receiptPreview">
+            <p>
+              <a id="receiptOpenLink" target="_blank" style="display:none">
+                Click to preview receipt
+              </a>
+            </p>
+            <button type="button" id="removeReceiptBtn" style="display:none">
+              Remove Receipt
+            </button>
+          </div>
+
+          <button id="sbtBtn" type="submit">Submit</button>
+          <button type="button" id="clearDraftBtn">Clear Draft</button>
+
+          <p id="status"></p>
+        </form>
+      </div>
+
+      <!-- HOME PAGE -->
+      <div id="homePage" class="page">
+
+ <!--  Offline Queue Badge + Sync Message -->
+<div class="offlineBox">
+  <p id="offlineBadgeText" class="offlineBadgeText">
+    Pending Receipts: <span id="offlineBadgeCount">0</span>
+    <!-- <span id="offlineBadge" class="offlineBadge hidden">0</span> -->
+  </p>
+
+  <!--  Sync status message -->
+  <div id="offlineSyncMsgBox" class="offlineSyncMsgBox">
+    <span id="offlineSyncMsg"></span>
+    <!-- <button id="clearOfflineMsgBtn" type="button">Clear</button> -->
+  </div>
+</div>
+
+
+        <h2>Submitted Expenses</h2>
+        <div class="expenseTabs">
+  <button class="tabBtn active" data-tab="Pending">Pending</button>
+  <button class="tabBtn" data-tab="Approved">Approved</button>
+  <button class="tabBtn" data-tab="Rejected">Rejected</button>
+</div>
+
+<div class="tagFilterBar">
+    <h3>Filter by Tags</h3>
+    <div id="tagFilterList"></div>
+    <button id="clearTagFilterBtn" type="button">Clear Tag Filter</button>
+  </div>
+
+        <!-- EXPENSES container -->
+     <div class="expenseScroll">
+  <table class="expenseTable">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Amount</th>
+        <th>Department</th>
+        <th>Date</th>
+        <th>Tags</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+
+    <tbody id="expenseTableBody"></tbody>
+  </table>
+  <div class="pagination">
+  <button id="prevPage">Prev</button>
+  <span id="pageInfo"></span>
+  <button id="nextPage">Next</button>
+</div>
+</div>
+
+
+
+    </div>
+  </div>
+
+  <script type="module" src="./js/authEmp.js"></script>
+  <script type="module" src="./js/emp.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bcryptjs@2.4.3/dist/bcrypt.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+
+</body>
+</html>

@@ -1,0 +1,1796 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Inter", sans-serif;
+}
+
+/* ✅ FIXED LAYOUT: widget + dashboard */
+body {
+  height: 100vh;
+  background: linear-gradient(135deg, #0f172a, #111827, #020617);
+  color: #e5e7eb;
+
+  display: flex;
+  flex-direction: column;
+
+  overflow: hidden; /* no full page scroll */
+}
+
+/*  Short polling widget stays top */
+.spWidget {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  padding: 10px;
+  border: 1px solid #334155;
+  border-radius: 10px;
+  background: #0b1220;
+  margin: 12px;
+  width: 140vh;
+}
+#spCurr{
+display: flex;
+}
+
+.spRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.led {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  display: inline-block;
+  border: 1px solid #475569;
+}
+
+.led.green {
+  background: #22c55e;
+}
+.led.red {
+  background: #ef4444;
+}
+.led.yellow {
+  background: #facc15;
+}
+
+.spMeta {
+  margin-top: 6px;
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+/* ✅ Dashboard takes remaining height */
+.dashboard {
+  display: flex;
+  flex: 1; /* take remaining space */
+  min-height: 0; /* important for scroll behavior */
+}
+
+/* =========================
+   Sidebar
+========================= */
+.sidebar {
+  width: 220px;
+  background: #0b1220;
+  border-right: 1px solid rgba(148, 163, 184, 0.18);
+  padding: 18px;
+
+  display: flex;
+  flex-direction: column;
+
+  /* ✅ if lots of buttons, sidebar scrolls */
+  overflow-y: auto;
+  min-height: 0;
+}
+
+/* sidebar scrollbar */
+.sidebar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.25);
+  border-radius: 10px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.4);
+}
+
+.sidebarTitle {
+  font-size: 1.3rem;
+  font-weight: 900;
+  color: #f8fafc;
+  margin-bottom: 18px;
+}
+
+.sideBtn {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 10px;
+  border-radius: 10px;
+
+  background: rgba(148, 163, 184, 0.08);
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  color: #e5e7eb;
+  font-weight: 800;
+
+  cursor: pointer;
+  text-align: left;
+  transition: 0.2s ease;
+}
+
+.sideBtn:hover {
+  background: rgba(59, 130, 246, 0.12);
+  transform: translateX(4px);
+}
+
+.sideBtn.active {
+  background: rgba(37, 99, 235, 0.22);
+  border-color: rgba(37, 99, 235, 0.35);
+}
+
+/* sidebar footer */
+.sidebarFooter {
+  margin-top: auto;
+}
+
+.logoutSideBtn {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+
+  background: rgba(248, 113, 113, 0.16);
+  border: 1px solid rgba(248, 113, 113, 0.35);
+  color: #fecaca;
+
+  font-weight: 900;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.logoutSideBtn:hover {
+  transform: translateY(-2px);
+  opacity: 0.95;
+}
+
+/* =========================
+   Parent (Right Panel)
+========================= */
+.parent {
+  flex: 1;
+  padding: 18px;
+
+  /* ✅ right panel scroll */
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0;
+
+  animation: fadeUp 0.4s ease;
+}
+
+/* right panel scrollbar */
+.parent::-webkit-scrollbar {
+  width: 8px;
+}
+
+.parent::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.25);
+  border-radius: 10px;
+}
+
+.parent::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.4);
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.parent > h2 {
+  text-align: center;
+  margin-bottom: 14px;
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: #f8fafc;
+}
+
+/* =========================
+   Pages
+========================= */
+.page {
+  display: none;
+}
+
+.page.visible {
+  display: block;
+  animation: fadeUp 0.35s ease;
+}
+
+/* =========================
+   Employee Form
+========================= */
+.empForm {
+  background: #0b1220;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 18px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+}
+
+.hidden {
+  display: none;
+}
+
+#formTitle {
+  text-align: center;
+  font-size: 1.3rem;
+  margin-bottom: 14px;
+  font-weight: 900;
+  color: #f1f5f9;
+}
+
+label {
+  display: block;
+  margin: 12px 0 6px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: rgba(226, 232, 240, 0.85);
+}
+
+input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  outline: none;
+
+  background: #020617;
+  color: #f8fafc;
+  transition: 0.2s ease;
+}
+
+input::placeholder {
+  color: rgba(148, 163, 184, 0.65);
+}
+
+input:focus {
+  border-color: rgba(59, 130, 246, 0.7);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.18);
+}
+
+#loginBtn {
+  width: 100%;
+  margin-top: 14px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+
+  font-size: 1rem;
+  font-weight: 900;
+  color: white;
+  background: linear-gradient(90deg, #2563eb, #1d4ed8);
+  transition: 0.2s ease;
+}
+
+#loginBtn:hover {
+  transform: translateY(-2px);
+  opacity: 0.95;
+}
+
+/* =========================
+   Expense List
+========================= */
+/* .expenseScroll {
+  height: calc(100vh - 170px);
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
+.expenseScroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+.expenseScroll::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.25);
+  border-radius: 10px;
+}
+
+.expenseScroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.4);
+} */
+.pagination {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 10px;
+}
+.pagination button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+#expenseList {
+  list-style: none;
+  background: #0b1220;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+}
+
+#expenseList li {
+  padding: 14px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+  transition: 0.2s ease;
+}
+
+#expenseList li:hover {
+  background: rgba(59, 130, 246, 0.08);
+}
+
+#expenseList li:last-child {
+  border-bottom: none;
+}
+
+.expRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.expText {
+  flex: 1;
+  font-weight: 600;
+  color: rgba(226, 232, 240, 0.9);
+  line-height: 1.4;
+}
+
+.expActions {
+  display: flex;
+  gap: 10px;
+}
+
+.approveBtn {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-weight: 900;
+  color: white;
+  background: rgba(34, 197, 94, 0.22);
+  border: 1px solid rgba(34, 197, 94, 0.4);
+  transition: 0.2s ease;
+}
+
+.approveBtn:hover {
+  transform: translateY(-2px);
+  background: rgba(34, 197, 94, 0.3);
+}
+
+.rejectBtn {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-weight: 900;
+  color: #fecaca;
+  background: rgba(248, 113, 113, 0.16);
+  border: 1px solid rgba(248, 113, 113, 0.35);
+  transition: 0.2s ease;
+}
+
+.rejectBtn:hover {
+  transform: translateY(-2px);
+  background: rgba(248, 113, 113, 0.22);
+}
+
+/* =========================
+   Report Generator
+========================= */
+.reportSection {
+  margin: 16px 0;
+  padding: 12px;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  background: #0b1220;
+}
+
+.reportBox {
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #1e293b;
+  background: #0f172a;
+  max-height: 250px;
+  overflow: auto;
+}
+
+#reportOutput {
+  color: #cbd5e1;
+  font-size: 12px;
+}
+
+/* =====================================================
+   ADMIN HOME PAGE (Expenses box + Audit box)
+===================================================== */
+#adminHomePage.page.visible {
+  display: grid;
+  grid-template-columns: 1.7fr 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+#listOfExpenses {
+  background: #0b1220;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 14px;
+  padding: 14px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  height: 520px;
+}
+#listOfExpenses .expenseScroll {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+#listOfExpenses .expenseScroll::-webkit-scrollbar {
+  width: 8px;
+}
+#listOfExpenses .expenseScroll::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.25);
+  border-radius: 10px;
+}
+
+#listOfExpenses .expenseScroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.4);
+}
+
+#listOfExpenses h2 {
+  font-size: 1.15rem;
+  font-weight: 900;
+  margin-bottom: 12px;
+  color: rgba(226, 232, 240, 0.92);
+}
+
+
+
+.auditSection {
+  background: #0b1220;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 14px;
+  padding: 14px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.auditSection h3 {
+  font-size: 1.05rem;
+  font-weight: 900;
+  margin-bottom: 12px;
+  color: rgba(226, 232, 240, 0.92);
+}
+
+.auditHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  background: rgba(2, 6, 23, 0.35);
+  margin-bottom: 12px;
+}
+
+#wsState {
+  font-weight: 800;
+  color: rgba(226, 232, 240, 0.85);
+}
+
+#wsSendNoteBtn {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-weight: 900;
+  color: white;
+  background: linear-gradient(90deg, #2563eb, #1d4ed8);
+  transition: 0.2s ease;
+}
+
+#wsSendNoteBtn:hover {
+  transform: translateY(-2px);
+  opacity: 0.95;
+}
+
+.auditFeedList {
+  list-style: none;
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 6px;
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.auditFeedList::-webkit-scrollbar {
+  width: 8px;
+}
+
+.auditFeedList::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.25);
+  border-radius: 10px;
+}
+
+.auditFeedList::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.4);
+}
+
+.auditFeedList li {
+  padding: 12px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+  color: rgba(226, 232, 240, 0.9);
+  transition: 0.2s ease;
+}
+
+.auditFeedList li:hover {
+  background: rgba(59, 130, 246, 0.08);
+}
+
+.auditFeedList li:last-child {
+  border-bottom: none;
+}
+
+/* Responsive */
+@media (max-width: 720px) {
+  .sidebar {
+    width: 170px;
+  }
+  .sidebarTitle {
+    font-size: 1.1rem;
+  }
+
+  .expRow {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .expActions {
+    width: 100%;
+  }
+
+  .approveBtn,
+  .rejectBtn {
+    flex: 1;
+    width: 100%;
+  }
+}
+
+@media (max-width: 950px) {
+  #adminHomePage.page.visible {
+    grid-template-columns: 1fr;
+  }
+
+  #listOfExpenses .expenseScroll {
+    height: 50vh;
+  }
+
+  .auditSection {
+    height: 50vh;
+  }
+}
+/* ✅ STATUS MATRIX */
+.statusMatrix {
+  position: fixed;
+  top: 10px;
+  right: 20px;
+  left: auto;
+  width: 230px;
+  padding: 12px;
+  background: rgba(2, 6, 23, 0.35);
+  color: white;
+  border-radius: 10px;
+  font-size: 14px;
+  z-index: 9999;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.4);
+
+}
+
+
+.statusMatrix h3 {
+  margin: 0 0 10px;
+  font-size: 15px;
+  font-weight: bold;
+  color: #fff;
+}
+
+.statusRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 6px 0;
+}
+
+.statusLabel {
+  width: 35px;
+  font-weight: bold;
+  color: #ddd;
+}
+
+.statusMeta {
+  flex: 1;
+  font-size: 12px;
+  color: #aaa;
+}
+
+/* LED styles (if already exist, no need duplicate) */
+.led {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.led.green {
+  background: #00ff6a;
+  box-shadow: 0 0 10px #00ff6a;
+}
+
+.led.red {
+  background: #ff3b3b;
+  box-shadow: 0 0 10px #ff3b3b;
+}
+
+.led.yellow {
+  background: #ffd000;
+  box-shadow: 0 0 10px #ffd000;
+}
+
+/* ✅ TERMINAL LOOK */
+.auditTerminal {
+  margin-top: 10px;
+  height: 220px;
+  overflow-y: auto;
+  background: #0b0f14;
+  border: 1px solid #2a3340;
+  border-radius: 10px;
+  padding: 12px;
+  font-family: Consolas, Monaco, "Courier New", monospace;
+  font-size: 12px;
+  color: #d7e1ec;
+  white-space: pre-wrap;
+}
+
+.auditTerminal .line {
+  margin: 0;
+  padding: 2px 0;
+}
+
+.auditTerminal .ok {
+  color: #00ff6a;
+}
+
+.auditTerminal .warn {
+  color: #ffd000;
+}
+
+.auditTerminal .err {
+  color: #ff3b3b;
+}
+
+.auditTerminal .dim {
+  color: #8aa0b2;
+}
+
+
+#adminHomePage.page.visible {
+  display: grid;
+  grid-template-columns: 1.7fr 1fr;
+  grid-template-rows: auto auto;
+  gap: 16px;
+  align-items: start;
+}
+
+/* Expenses on left spanning both rows */
+#listOfExpenses {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  height: 520px;
+}
+
+/* Audit on right top */
+.auditSection {
+  grid-column: 2;
+  grid-row: 1;
+  height: 320px;
+}
+
+/* Exchange on right bottom */
+.exchangeSection {
+  grid-column: 2;
+  grid-row: 2;
+
+  background: #0b1220;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 14px;
+  padding: 14px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+
+  height: 184px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.exchangeSection::-webkit-scrollbar {
+  width: 8px;
+}
+
+.exchangeSection::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.25);
+  border-radius: 10px;
+}
+
+.exchangeSection::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.4);
+}
+
+/* exchange text styling */
+.exchangeSection h3 {
+  font-size: 1.05rem;
+  font-weight: 900;
+  margin-bottom: 10px;
+  color: rgba(226, 232, 240, 0.92);
+}
+
+.exchangeSection p,
+.exchangeSection small {
+  color: rgba(226, 232, 240, 0.88);
+  line-height: 1.5;
+}
+
+#sseState {
+  font-weight: 800;
+  margin-bottom: 10px;
+  color: rgba(226, 232, 240, 0.9);
+}
+
+.expenseScroll {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
+.expenseTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.expenseTable thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  text-align: left;
+  padding: 10px 10px;
+  background: #0b1220;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+  color: rgba(226, 232, 240, 0.92);
+  font-weight: 900;
+}
+
+.expenseTable tbody td {
+  padding: 10px 10px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+  color: rgba(226, 232, 240, 0.88);
+  vertical-align: top;
+}
+
+.expenseTable tbody tr:hover {
+  background: rgba(59, 130, 246, 0.06);
+}
+
+.expenseTable td.actionsCell {
+  white-space: nowrap;
+}
+
+.tableApproveBtn,
+.tableRejectBtn {
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-weight: 900;
+  font-size: 12px;
+  transition: 0.2s ease;
+}
+
+.tableApproveBtn {
+  color: white;
+  background: rgba(34, 197, 94, 0.22);
+  border: 1px solid rgba(34, 197, 94, 0.4);
+}
+
+.tableApproveBtn:hover {
+  transform: translateY(-2px);
+  background: rgba(34, 197, 94, 0.3);
+}
+
+.tableRejectBtn {
+  color: #fecaca;
+  background: rgba(248, 113, 113, 0.16);
+  border: 1px solid rgba(248, 113, 113, 0.35);
+  margin-left: 8px;
+}
+
+.tableRejectBtn:hover {
+  transform: translateY(-2px);
+  background: rgba(248, 113, 113, 0.22);
+}
+
+.auditNotesBnt {
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  cursor: pointer;
+
+  font-weight: 900;
+  font-size: 12px;
+  color: #e0f2fe;
+
+  background: rgba(14, 165, 233, 0.14);
+  border-color: rgba(14, 165, 233, 0.32);
+
+  transition: 0.2s ease;
+}
+
+.auditNotesBnt:hover {
+  transform: translateY(-2px);
+  background: rgba(14, 165, 233, 0.22);
+  border-color: rgba(14, 165, 233, 0.45);
+}
+
+.auditNotesBnt:active {
+  transform: translateY(0px);
+  opacity: 0.92;
+}
+
+#clearAuditLogBtn {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  cursor: pointer;
+
+  font-weight: 900;
+  font-size: 12px;
+  color: #fecaca;
+
+  background: rgba(248, 113, 113, 0.14);
+  border-color: rgba(248, 113, 113, 0.35);
+
+  transition: 0.2s ease;
+}
+
+#clearAuditLogBtn:hover {
+  transform: translateY(-2px);
+  background: rgba(248, 113, 113, 0.2);
+  border-color: rgba(248, 113, 113, 0.48);
+}
+
+#clearAuditLogBtn:active {
+  transform: translateY(0px);
+  opacity: 0.92;
+}
+.expenseTabs{
+  margin-top: 12px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.tabBtn{
+  padding: 8px 16px;
+  border: 1px solid #ddd;
+  background: #111827;
+  color: white;
+  cursor: pointer;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.tabBtn.active{
+  color: #111827;
+  background: white;
+  border-color: #111827;
+}
+/* visulization grid */
+.budgetGrid {
+  display: grid;
+  gap: 12px;
+  margin-top: 12px;
+}
+.budgetCard {
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 12px;
+  /* background: #fff; */
+}
+
+.budgetRowTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.budgetDeptName {
+  font-weight: 800;
+  font-size: 16px;
+}
+
+.budgetNumbers {
+  display: flex;
+  gap: 14px;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.progressWrap {
+  height: 10px;
+  border-radius: 999px;
+  /* background: #111827; */
+  background: #2b3a5b;
+  overflow: hidden;
+}
+
+.progressBar {
+  height: 100%;
+  width: 0%;
+  background: #eee;
+}
+
+.deptLayout {
+  display: grid;
+  grid-template-columns: 1fr 1.3fr;
+  gap: 16px;
+  margin-top: 12px;
+  align-items: start;
+}
+
+.deptCard {
+  background: #0b1220;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+    max-height: 470px;        /* adjust as needed */
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+}
+.deptCard::-webkit-scrollbar {
+  width: 8px;
+}
+
+.deptCard::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.25);
+  border-radius: 10px;
+}
+
+.deptCard::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.4);
+}
+
+.deptCard h2 {
+  font-size: 1.2rem;
+  font-weight: 900;
+  margin-bottom: 12px;
+  color: rgba(226, 232, 240, 0.92);
+}
+
+#depttForm input {
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+#depttBtn {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+
+  font-size: 1rem;
+  font-weight: 900;
+  color: white;
+  background: linear-gradient(90deg, #2563eb, #1d4ed8);
+  transition: 0.2s ease;
+}
+
+#depttBtn:hover {
+  transform: translateY(-2px);
+  opacity: 0.95;
+}
+
+
+.budgetGrid {
+  margin-top: 8px;
+  min-height: 280px;
+  border-radius: 12px;
+  padding: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  background: rgba(2, 6, 23, 0.35);
+  overflow-y: auto;
+}
+.actionsCell button {
+  position: relative;
+  z-index: 1;
+}
+
+
+/* toast css */
+#toastContainer {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.toast {
+  background: #111827;
+  color: #fff;
+  padding: 12px 16px;
+  border-radius: 8px;
+  min-width: 260px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+  animation: slideIn 0.3s ease;
+  font-size: 14px;
+}
+
+.toast.success { border-left: 4px solid #22c55e; }
+.toast.warn    { border-left: 4px solid #f59e0b; }
+.toast.error   { border-left: 4px solid #ef4444; }
+
+.toast-title {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.toast-msg {
+  opacity: 0.9;
+}
+
+@keyframes slideIn {
+  from { transform: translateX(30px); opacity: 0; }
+  to   { transform: translateX(0); opacity: 1; }
+}
+
+
+@media (max-width: 950px) {
+  .deptLayout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.auditModal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.auditModal.hidden {
+  display: none;
+}
+
+.auditModalBox {
+  width: 380px;
+  background: #111;
+  padding: 16px;
+  border-radius: 8px;
+}
+
+.auditModalBox textarea {
+  width: 100%;
+  resize: none;
+}
+
+.charCounter {
+  text-align: right;
+  font-size: 12px;
+  color: #aaa;
+}
+
+.previousNotes {
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+.previousNotesList .noteItem {
+  background: #1a1a1a;
+  padding: 6px;
+  border-radius: 4px;
+  margin-bottom: 6px;
+  font-size: 13px;
+}
+
+/* =========================
+   Pagination
+========================= */
+.pagination {
+  margin-top: 14px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+}
+
+.pagination button {
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  background: rgba(148, 163, 184, 0.12);
+  color: #e5e7eb;
+
+  font-weight: 800;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+/* hover */
+.pagination button:hover:not(:disabled) {
+  background: rgba(59, 130, 246, 0.22);
+  border-color: rgba(59, 130, 246, 0.45);
+  transform: translateY(-2px);
+}
+
+/* disabled state */
+.pagination button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* page info text */
+#pageInfo {
+  font-weight: 900;
+  font-size: 14px;
+  color: #cbd5f5;
+  min-width: 90px;
+  text-align: center;
+}
+/* =========================
+   Quick Info / Audit Modal
+========================= */
+.auditModal {
+  position: fixed;
+  inset: 0;
+  background: rgba(2, 6, 23, 0.65); /* dark overlay */
+  backdrop-filter: blur(6px);
+  z-index: 9999;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auditModal.hidden {
+  display: none;
+}
+
+/* modal box */
+.auditModalBox {
+  width: 420px;
+  max-width: 92%;
+  background: #0b1220;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 16px;
+  padding: 18px 20px;
+
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
+  animation: modalPop 0.25s ease;
+}
+
+@keyframes modalPop {
+  from {
+    opacity: 0;
+    transform: scale(0.94) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.auditModalBox h3 {
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: 900;
+  color: #f8fafc;
+  margin-bottom: 14px;
+}
+
+/* summary + details */
+.quickInfoSummary,
+.expenseDetails {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.quickInfoSummary p,
+.expenseDetails p {
+  font-size: 14px;
+  color: rgba(226, 232, 240, 0.9);
+  line-height: 1.4;
+}
+
+.quickInfoSummary b,
+.expenseDetails b {
+  color: #e5e7eb;
+}
+
+/* divider */
+.auditModalBox hr {
+  margin: 14px 0;
+  border: none;
+  border-top: 1px solid rgba(148, 163, 184, 0.18);
+}
+
+/* receipt link */
+#qiReceipt a {
+  color: #60a5fa;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+#qiReceipt a:hover {
+  text-decoration: underline;
+}
+
+/* modal actions */
+.auditModalActions {
+  margin-top: 16px;
+  display: flex;
+  justify-content: center;
+}
+
+/* close button */
+#closeQuickInfoBtn {
+  padding: 10px 18px;
+  border-radius: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  background: rgba(148, 163, 184, 0.15);
+  color: #e5e7eb;
+
+  font-weight: 900;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+#closeQuickInfoBtn:hover {
+  transform: translateY(-2px);
+  background: rgba(59, 130, 246, 0.22);
+  border-color: rgba(59, 130, 246, 0.45);
+}
+
+/* small screens */
+@media (max-width: 480px) {
+  .auditModalBox {
+    padding: 16px;
+  }
+}
+/* =========================
+   Quick Info (ℹ️) Button
+========================= */
+.quickInfoBtn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  background: rgba(96, 165, 250, 0.14);
+  border: 1px solid rgba(96, 165, 250, 0.35);
+  color: #93c5fd;
+
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.quickInfoBtn:hover {
+  background: rgba(96, 165, 250, 0.28);
+  transform: scale(1.08);
+}
+
+.quickInfoBtn:active {
+  transform: scale(0.96);
+}
+
+/* Optional: subtle glow on hover */
+.quickInfoBtn:hover {
+  box-shadow: 0 0 10px rgba(96, 165, 250, 0.35);
+}
+
+/* If button is inside action column */
+.actions .quickInfoBtn {
+  margin-right: 8px;
+}
+
+/* =========================
+   View Receipt Button
+========================= */
+.viewReceiptBtn {
+  padding: 8px 14px;
+  border-radius: 10px;
+
+  background: rgba(34, 197, 94, 0.14);
+  border: 1px solid rgba(34, 197, 94, 0.4);
+  color: #86efac;
+
+  font-size: 13px;
+  font-weight: 900;
+  cursor: pointer;
+  white-space: nowrap;
+
+  transition: 0.2s ease;
+}
+
+.viewReceiptBtn:hover {
+  background: rgba(34, 197, 94, 0.26);
+  transform: translateY(-2px);
+  box-shadow: 0 0 10px rgba(34, 197, 94, 0.35);
+}
+
+.viewReceiptBtn:active {
+  transform: translateY(0);
+}
+
+/*  disabled state */
+.viewReceiptBtn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+/* Department select – Add Employee form only */
+#addEmpForm label select {
+  width: 100%;
+  margin-top: 6px;
+  padding: 12px 14px;
+
+  border-radius: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+
+  background: #020617;
+  color: #f8fafc;
+
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Focus state */
+#addEmpForm label select:focus {
+  outline: none;
+  border-color: rgba(59, 130, 246, 0.7);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.18);
+}
+
+/* Dropdown options */
+#addEmpForm label select option {
+  background: #020617;
+  color: #f8fafc;
+  font-weight: 500;
+}
+
+/* Disabled / placeholder option */
+#addEmpForm label select option[value=""] {
+  color: rgba(148, 163, 184, 0.6);
+}
+/* Grid wrapper */
+.empGrid {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 18px;
+  align-items: start;
+}
+
+/* =========================
+   Box 2: All Employees
+========================= */
+.empListCard {
+  background: #0b1220;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+
+  display: flex;
+  flex-direction: column;
+}
+
+.empListCard h2 {
+  font-size: 1.2rem;
+  font-weight: 900;
+  margin-bottom: 12px;
+  color: #f1f5f9;
+}
+
+/* Scroll area */
+.empTableWrap {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
+.empTableWrap::-webkit-scrollbar {
+  width: 8px;
+}
+
+.empTableWrap::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.25);
+  border-radius: 10px;
+}
+
+.empTableWrap::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.4);
+}
+
+/* Table styling */
+#empTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+#empTable thead {
+  background: rgba(148, 163, 184, 0.08);
+}
+
+#empTable th,
+#empTable td {
+  padding: 12px 14px;
+  text-align: left;
+  font-size: 14px;
+  color: rgba(226, 232, 240, 0.92);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+#empTable tr:hover td {
+  background: rgba(59, 130, 246, 0.08);
+}
+
+#empTable tr:last-child td {
+  border-bottom: none;
+}
+
+/* =========================
+   Responsive
+========================= */
+@media (max-width: 950px) {
+  .empGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Employee list card */
+.empListCard {
+  background: #0f172a;
+  padding: 16px;
+  border-radius: 12px;
+  color: #e5e7eb;
+}
+
+/* Scroll container */
+.empTableWrap {
+  max-height: 300px;        /* 🔥 adjust as needed */
+  overflow-y: auto;         /* vertical scrollbar */
+  border-radius: 8px;
+  border: 1px solid #1f2937;
+}
+
+/* Table styling */
+#empTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* Sticky header */
+#empTable thead th {
+  position: sticky;
+  top: 0;
+  background: #020617;
+  z-index: 2;
+  padding: 10px;
+  text-align: left;
+}
+
+/* Rows */
+#empTable td {
+  padding: 10px;
+  border-bottom: 1px solid #1f2937;
+}
+
+/* Hover effect */
+#empTable tbody tr:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+/* Optional scrollbar styling (Chrome / Edge) */
+.empTableWrap::-webkit-scrollbar {
+  width: 6px;
+}
+.empTableWrap::-webkit-scrollbar-thumb {
+  background: #475569;
+  border-radius: 4px;
+}
+.empTableWrap::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Department select – minimal styling */
+#formDepartment {
+  width: 100%;
+  padding: 10px 12px;
+  margin-top: 4px;
+  margin-bottom: 12px;
+
+  background-color: #020617;
+  color: #e5e7eb;
+
+  border: 1px solid #334155;
+  border-radius: 6px;
+
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* focus state */
+#formDepartment:focus {
+  outline: none;
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.5);
+}
+
+/* disabled / placeholder option */
+#formDepartment option[value=""] {
+  color: #94a3b8;
+}
+
+/* dropdown options */
+#formDepartment option {
+  background: #020617;
+  color: #e5e7eb;
+}
+
+/* =========================
+   Audit Modal Overlay
+========================= */
+.auditModal {
+  position: fixed;
+  inset: 0;
+  background: rgba(2, 6, 23, 0.72);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.auditModal.hidden {
+  display: none;
+}
+
+/* =========================
+   Modal Box
+========================= */
+.auditModalBox {
+  width: 520px;
+  max-width: 92%;
+  max-height: 85vh;
+  overflow: hidden;
+
+  background: #0b1220;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 16px;
+  padding: 18px;
+
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+  animation: modalPop 0.25s ease;
+}
+
+@keyframes modalPop {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.auditModalBox h3 {
+  font-size: 1.2rem;
+  font-weight: 900;
+  margin-bottom: 12px;
+  color: #f8fafc;
+}
+
+/* =========================
+   Textarea
+========================= */
+#auditNoteInput {
+  width: 100%;
+  min-height: 100px;
+  resize: vertical;
+  padding: 12px 14px;
+
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  background: #020617;
+  color: #f8fafc;
+
+  font-size: 14px;
+  outline: none;
+  transition: 0.2s ease;
+}
+
+#auditNoteInput::placeholder {
+  color: rgba(148, 163, 184, 0.65);
+}
+
+#auditNoteInput:focus {
+  border-color: rgba(59, 130, 246, 0.75);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.18);
+}
+
+/* =========================
+   Character Counter
+========================= */
+.charCounter {
+  text-align: right;
+  margin-top: 6px;
+  font-size: 12px;
+  color: rgba(148, 163, 184, 0.75);
+}
+
+/* =========================
+   Action Buttons
+========================= */
+.auditModalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+#auditModalActions button,
+#saveAuditNoteBtn,
+#cancelAuditNoteBtn {
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+
+  font-weight: 900;
+  font-size: 14px;
+  transition: 0.2s ease;
+}
+
+/* Save */
+#saveAuditNoteBtn {
+  background: linear-gradient(90deg, #2563eb, #1d4ed8);
+  color: white;
+}
+
+#saveAuditNoteBtn:hover {
+  transform: translateY(-2px);
+  opacity: 0.95;
+}
+
+/* Cancel */
+#cancelAuditNoteBtn {
+  background: rgba(148, 163, 184, 0.14);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  color: #e2e8f0;
+}
+
+#cancelAuditNoteBtn:hover {
+  transform: translateY(-2px);
+  opacity: 0.9;
+}
+
+/* Divider */
+.auditModalBox hr {
+  margin: 16px 0;
+  border: none;
+  border-top: 1px solid rgba(148, 163, 184, 0.18);
+}
+
+/* =========================
+   Previous Notes
+========================= */
+.previousNotes h4 {
+  font-size: 0.95rem;
+  font-weight: 800;
+  margin-bottom: 8px;
+  color: rgba(226, 232, 240, 0.9);
+}
+
+#previousNotesList {
+  max-height: 160px;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
+#previousNotesList::-webkit-scrollbar {
+  width: 8px;
+}
+
+#previousNotesList::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.25);
+  border-radius: 10px;
+}
+
+#previousNotesList::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.4);
+}
+
+/* Individual note */
+.previousNotes .noteItem {
+  background: rgba(148, 163, 184, 0.08);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 8px;
+
+  font-size: 13px;
+  color: rgba(226, 232, 240, 0.9);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+

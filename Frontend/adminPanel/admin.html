@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Panel</title>
+  <link rel="stylesheet" href="./stylesheets/adminStyle.css" />
+</head>
+
+<body>
+  <!-- shortpooling widget -->
+  <div id="spCurr">
+
+    <div class="spWidget">
+      <div class="spRow">
+        <span id="spLed" class="led yellow"></span>
+        <span id="spText">Connectivity: Checking...</span>
+      </div>
+      <div id="spMeta" class="spMeta"></div>
+    </div>
+  </div>
+
+  <!-- 4 led indicators status matrix -->
+  <div class="statusMatrix">
+    <h3>Status Matrix</h3>
+    <div class="statusRow">
+      <span id="ledWS" class="led red"></span>
+      <span class="statusLabel">WS</span>
+      <span id="metaWS" class="statusMeta">Disconnected</span>
+    </div>
+    <div class="statusRow">
+      <span id="ledSSE" class="led red"></span>
+      <span class="statusLabel">SSE</span>
+      <span id="metaSSE" class="statusMeta">Disconnected</span>
+    </div>
+    <div class="statusRow">
+      <span id="ledLP" class="led red"></span>
+      <span class="statusLabel">LP</span>
+      <span id="metaLP" class="statusMeta">Idle</span>
+    </div>
+    <div class="statusRow">
+      <span id="ledSP" class="led yellow"></span>
+      <span class="statusLabel">SP</span>
+      <span id="metaSP" class="statusMeta">Checking...</span>
+    </div>
+  </div>
+
+  <div class="dashboard">
+    <div class="sidebar">
+      <h2 class="sidebarTitle">Admin Panel</h2>
+      <!-- sidepanel -->
+      <button id="adminHomeBtn" class="sideBtn active"> Home</button>
+      <button id="adminAddEmpBtn" class="sideBtn">Add Employee</button>
+      <button id="addDeppBtn" class="sideBtn">Department Info</button>
+      <button id="reportGenBtn" class="sideBtn">Generate Report</button>
+      <div class="sidebarFooter">
+        <button id="lgtBtn" class="logoutSideBtn">Logout</button>
+      </div>
+    </div>
+
+    <div class="parent">
+      <h2>ADMIN PANEL</h2>
+    <div id="addEmpPage" class="page">
+  <div class="empGrid">
+    <!-- Box 1: Add Employee -->
+    <form action="" id="addEmpForm" class="empForm">
+      <h2 id="formTitle">Add Employee</h2>
+
+      <label>Enter Name</label>
+      <input type="text" id="formName" placeholder="Employee Name" required />
+
+      <label>Department</label>
+      <select id="formDepartment" required>
+        <option value="">Select</option>
+      </select>
+
+      <label>Enter Username</label>
+      <input type="text" id="formUserId" placeholder="Enter Username" required />
+
+      <label>Enter Email</label>
+      <input type="email" id="formEmail" placeholder="enter email" required />
+
+      <label>Enter Password</label>
+      <input type="password" id="formPass" placeholder="enter password" required />
+      <p id="passError" class="errorText"></p>
+
+      <button type="submit" id="loginBtn">Submit</button>
+    </form>
+
+    <!-- Box 2: All Employees -->
+    <div id="allEmployees" class="empListCard">
+      <h2>All Employees</h2>
+
+      <div class="empTableWrap">
+        <table id="empTable">
+          <thead>
+            <tr>
+              <th>Sno.</th>
+              <th>UserId</th>
+              <th>Email</th>
+              <th>Department</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+      <!-- DEPARTMENT PAGE -->
+      <div id="deptPage" class="page">
+        <h2>Department Info</h2>
+
+        <div class="deptLayout">
+          <!-- Box 1 -->
+          <div class="deptCard">
+            <h2>Add Department</h2>
+            <form action="" id="depttForm">
+              <label>Department Name:</label>
+              <input type="text" id="formDeptt" placeholder="enter department name" required />
+
+              <label>Department Budget</label>
+              <input type="text" id="formDepttBudget" placeholder="enter department budget" required />
+
+              <button id="depttBtn">Submit</button>
+            </form>
+          </div>
+
+          <!-- Box 2 -->
+          <div class="deptCard">
+            <h2>Department Budget Grid</h2>
+            <div id="budgetGrid" class="budgetGrid"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="AllEmpPage" class="page">
+        <h2>All Employees</h2>
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Harum, possimus.
+      </div>
+      <!--Quarterly Report Generator -->
+      <section class="reportSection page " id="taxReportGeneration">
+        <h3>Quarterly Tax Report (Web Worker)</h3>
+        <button id="generateReportBtn" class="sideBtn">
+          Generate Quarterly Report
+        </button>
+        <p id="reportStatus">Status: Idle</p>
+        <div class="reportBox">
+          <pre id="reportOutput">No report yet...</pre>
+        </div>
+        <button id="downloadReportBtn" class="sideBtn" disabled>Download Report (.csv)</button>
+
+      </section>
+
+
+      <div id="adminHomePage" class="page visible">
+        <div id="listOfExpenses">
+          <h2>All Submitted Expenses</h2>
+          <div class="expenseTabs">
+            <button class="tabBtn active" data-tab="Pending">Pending</button>
+            <button class="tabBtn" data-tab="approved">Approved</button>
+            <button class="tabBtn" data-tab="rejected">Rejected</button>
+          </div>
+          <div class="expenseScroll">
+            <table class="expenseTable">
+              <thead>
+                <tr>
+                  <!-- <th>Employee</th> -->
+                  <th>UserId</th>
+                  <th>Title</th>
+                  <th>Amount</th>
+                  <th>Department</th>
+                  <th>Date</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+
+              <tbody id="expenseTableBody"></tbody>
+            </table>
+            <div class="pagination">
+              <button id="prevPage">Prev</button>
+              <span id="pageInfo"></span>
+              <button id="nextPage">Next</button>
+            </div>
+          </div>
+
+
+        </div>
+        <section class="auditSection">
+          <h3>Live Audit Feed (WebSockets) </h3>
+          <div class="auditHeader">
+            <span id="wsState">WS: Disconnected </span>
+            <button id="wsSendNoteBtn">Send Admin Note</button>
+            <button id="clearAuditLogBtn">Clear Log</button>
+
+          </div>
+          <!--TERMINAL LOG -->
+          <div id="auditTerminal" class="auditTerminal"></div>
+          <!-- <ul id="auditFeedList" class="auditFeedList"></ul> -->
+        </section>
+
+        <section class="exchangeSection">
+          <h3>Global Exchange Rates (SSE)</h3>
+          <p id="sseState">SSE: Disconnected</p>
+
+          <p><b>USD → INR:</b> <span id="usdInr">—</span></p>
+          <p><b>USD → EUR:</b> <span id="usdEur">—</span></p>
+          <p><b>USD → GBP:</b> <span id="usdGbp">—</span></p>
+          <p><b>USD → JPY:</b> <span id="usdJpy">—</span></p>
+          <small id="ratesUpdatedAt">Last update: —</small>
+        </section>
+
+      </div>
+
+    </div>
+    <!-- TOAST NOTIFICATION -->
+
+  </div>
+  <div id="toastContainer"></div>
+
+  <!-- audit notes modal -->
+  <div id="auditNoteModal" class="auditModal hidden">
+    <div class="auditModalBox">
+      <h3>Audit Notes</h3>
+
+      <!-- New note input -->
+      <textarea id="auditNoteInput" maxlength="200" placeholder="Add audit note (max 200 chars)..."></textarea>
+      <div class="charCounter">
+        <span id="charCount">0</span>/200
+      </div>
+
+      <div class="auditModalActions">
+        <button id="saveAuditNoteBtn">Save</button>
+        <button id="cancelAuditNoteBtn">Cancel</button>
+      </div>
+      <hr />
+      <!-- Previous notes -->
+      <div class="previousNotes">
+        <h4>Previous Notes</h4>
+        <div id="previousNotesList"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Info Modal -->
+  <div id="quickInfoModal" class="auditModal hidden">
+    <div class="auditModalBox">
+      <h3>Expense Details</h3>
+      <!-- Summary -->
+      <div class="quickInfoSummary">
+        <p><b>User:</b> <span id="qiUser"></span></p>
+        <p><b>Status:</b> <span id="qiStatus"></span></p>
+        <p><b>Date:</b> <span id="qiDate"></span></p>
+      </div>
+      <hr />
+      <!-- Expense details -->
+      <div class="expenseDetails">
+        <p><b>Title:</b> <span id="qiTitle"></span></p>
+        <p><b>Department:</b> <span id="qiDept"></span></p>
+        <p><b>Amount:</b> <span id="qiAmount"></span></p>
+        <p><b>Receipt:</b> <span id="qiReceipt"></span></p>
+      </div>
+      <div class="auditModalActions">
+        <button id="closeQuickInfoBtn">Close</button>
+      </div>
+    </div>
+  </div>
+
+
+  <script type="module" src="./js/adminAuth.js"></script>
+  <script type="module" src="./js/admin.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bcryptjs@2.4.3/dist/bcrypt.min.js"></script>
+
+</body>
+
+</html>
