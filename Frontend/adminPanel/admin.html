@@ -50,10 +50,11 @@
     <div class="sidebar">
       <h2 class="sidebarTitle">Admin Panel</h2>
       <!-- sidepanel -->
-      <button id="adminHomeBtn" class="sideBtn active"> Home</button>
-      <button id="adminAddEmpBtn" class="sideBtn">Add Employee</button>
-      <button id="addDeppBtn" class="sideBtn">Department Info</button>
-      <button id="reportGenBtn" class="sideBtn">Generate Report</button>
+     <button id="adminHomeBtn" class="sideBtn active" data-page="home">Home</button>
+<button id="adminAddEmpBtn" class="sideBtn" data-page="addEmp">Add Employee</button>
+<button id="addDeppBtn" class="sideBtn" data-page="dept">Department Info</button>
+<button id="reportGenBtn" class="sideBtn" data-page="taxReport">Generate Report</button>
+
       <div class="sidebarFooter">
         <button id="lgtBtn" class="logoutSideBtn">Logout</button>
       </div>
@@ -155,14 +156,14 @@
 
       </section>
 
-
+<!-- HOME PAGE -->
       <div id="adminHomePage" class="page visible">
         <div id="listOfExpenses">
           <h2>All Submitted Expenses</h2>
           <div class="expenseTabs">
             <button class="tabBtn active" data-tab="Pending">Pending</button>
-            <button class="tabBtn" data-tab="approved">Approved</button>
-            <button class="tabBtn" data-tab="rejected">Rejected</button>
+            <button class="tabBtn" data-tab="Approved">Approved</button>
+            <button class="tabBtn" data-tab="Rejected">Rejected</button>
           </div>
           <div class="expenseScroll">
             <table class="expenseTable">

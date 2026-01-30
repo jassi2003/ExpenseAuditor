@@ -579,3 +579,70 @@ select option {
     font-size: 1.1rem;
   }
 }
+
+/* =========================
+   Table Action Buttons
+========================= */
+button[data-action="edit"],
+button[data-action="flag"],
+button[data-action="delete"] {
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  cursor: pointer;
+
+  font-size: 12px;
+  font-weight: 900;
+  transition: 0.2s ease;
+  margin-right: 8px;
+
+  background: rgba(148, 163, 184, 0.08);
+  color: #e5e7eb;
+}
+
+/* remove extra margin on last button */
+button[data-action="delete"] {
+  margin-right: 0;
+}
+
+/* =========================
+   Edit Button
+========================= */
+button[data-action="edit"] {
+  background: rgba(59, 130, 246, 0.14);
+  border-color: rgba(59, 130, 246, 0.35);
+  color: #bfdbfe;
+}
+
+button[data-action="edit"]:hover {
+  background: rgba(59, 130, 246, 0.24);
+  transform: translateY(-2px);
+}
+
+/* =========================
+   Flag / Unflag Button
+========================= */
+button[data-action="flag"] {
+  background: rgba(250, 204, 21, 0.14);
+  border-color: rgba(250, 204, 21, 0.35);
+  color: #fde68a;
+}
+
+button[data-action="flag"]:hover {
+  background: rgba(250, 204, 21, 0.24);
+  transform: translateY(-2px);
+}
+
+/* =========================
+   Delete Button
+========================= */
+button[data-action="delete"] {
+  background: rgba(248, 113, 113, 0.16);
+  border-color: rgba(248, 113, 113, 0.4);
+  color: #fecaca;
+}
+
+button[data-action="delete"]:hover {
+  background: rgba(248, 113, 113, 0.26);
+  transform: translateY(-2px);
+}

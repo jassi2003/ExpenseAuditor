@@ -10,7 +10,6 @@ export async function drainQueue(setStatus){
         if(!navigator.onLine) return;
         const queued=await getQueuedExpense()
             if (!queued.length) return
-
                 setStatus?.(` Syncing ${queued.length} offline item...`);
 for(const item of queued){
     try{

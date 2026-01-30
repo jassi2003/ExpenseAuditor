@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Long Poll Test</title>
+</head>
+<body>
+  <button id="btn">Call API</button>
+  <p id="output"></p>
+
+  <script>
+    const expenseId = "YOUR_EXPENSE_ID"; // <-- change this
+
+    document.getElementById("btn").addEventListener("click", async () => {
+      const output = document.getElementById("output");
+      output.textContent = "Waiting for response...";
+
+      const startTime = performance.now();
+
+      try {
+        const res = await fetch(
+          `http://localhost:5000/${expenseId}/long-poll`
+        );
+        const data = await res.text(); // or res.json() if your API returns JSON
+
+        const endTime = performance.now();
+        const timeTaken = ((endTime - startTime) / 1000).toFixed(2);
+
+        output.textContent = `Response: ${data} | Time taken: ${timeTaken}s`;
+      } catch (err) {
+        output.textContent = "Error: " + err.message;
+      }
+    });
+  </script>
+</body>
+</html>

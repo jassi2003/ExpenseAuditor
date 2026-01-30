@@ -34,6 +34,8 @@ function streamInrRates(req, res) {
   res.setHeader("Cache-Control", "no-cache");
   res.setHeader("Connection", "keep-alive");
 
+  console.log("SSE Connected");
+
   if (res.flushHeaders) res.flushHeaders();
 
   // hello
@@ -75,6 +77,7 @@ function streamInrRates(req, res) {
   })();
 
   req.on("close", () => {
+    console.log("SSE DISCONNECTED")
     clearInterval(ratesInterval);
     clearInterval(heartbeat);
     res.end();

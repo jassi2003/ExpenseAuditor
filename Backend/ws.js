@@ -39,7 +39,6 @@ function setupAuditWebSocket(server) {
     ws.on("message", (buffer) => {
       try {
         const data = JSON.parse(buffer.toString());
-
         // heartbeat
         if (data.type === "PING") {
           ws.send(JSON.stringify({ type: "PONG", payload: { time: Date.now() } }));

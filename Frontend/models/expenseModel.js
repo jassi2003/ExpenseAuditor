@@ -9,4 +9,6 @@ export const ExpenseDraftModel = {
   tag: "",
   file:"",
   status:"",
+  userId:"",
+  receipt:""
 };
