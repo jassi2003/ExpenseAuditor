@@ -5,11 +5,11 @@ export function startConnectivityAuditor({
   maxInterval = 60000,     
   timeoutMs = 2500, 
   //random delay       
-  jitter = true,            
+  // jitter = true,            
   onStatus = () => {},      
 } = {}) {
-  let stopped = false;
 
+  let stopped = false;
   let attempt = 0;              
   let nextDelay = baseInterval;  
   let lastOkAt = null;
@@ -17,12 +17,14 @@ export function startConnectivityAuditor({
 
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-  const computeBackoffDelay = () => {
-//exponential delay
-    const exp = baseInterval * Math.pow(2, attempt);
-    const capped = Math.min(exp, maxInterval);
 
-    if (!jitter) return capped;
+
+  //exponential delay,like attempt0:delay5s, attempt1:depaly10s and so on...  
+  const computeBackoffDelay = () => {
+    const exp = baseInterval * Math.pow(2, attempt);  //5000 × 2⁰
+    const capped = Math.min(exp, maxInterval);  //it prevents delay from growing forever.
+
+    // if (!jitter) return capped;
     return capped + Math.floor(Math.random() * 500);
   };
 //here, creating a fetch request that automatically cancelled after timeout
@@ -106,7 +108,6 @@ export function startConnectivityAuditor({
       await sleep(nextDelay);
     }
   }
-
   // start loop immediately
   loop();
 

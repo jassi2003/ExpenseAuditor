@@ -11,7 +11,6 @@
 <body>
   <!-- shortpooling widget -->
   <div id="spCurr">
-
     <div class="spWidget">
       <div class="spRow">
         <span id="spLed" class="led yellow"></span>
@@ -35,21 +34,17 @@
       <span id="metaSSE" class="statusMeta">Disconnected</span>
     </div>
     <div class="statusRow">
-      <span id="ledLP" class="led red"></span>
-      <span class="statusLabel">LP</span>
-      <span id="metaLP" class="statusMeta">Idle</span>
-    </div>
-    <div class="statusRow">
       <span id="ledSP" class="led yellow"></span>
       <span class="statusLabel">SP</span>
       <span id="metaSP" class="statusMeta">Checking...</span>
     </div>
   </div>
 
+  
   <div class="dashboard">
     <div class="sidebar">
       <h2 class="sidebarTitle">Admin Panel</h2>
-      <!-- sidepanel -->
+      <!--SIDE PANEL -->
      <button id="adminHomeBtn" class="sideBtn active" data-page="home">Home</button>
 <button id="adminAddEmpBtn" class="sideBtn" data-page="addEmp">Add Employee</button>
 <button id="addDeppBtn" class="sideBtn" data-page="dept">Department Info</button>
@@ -116,7 +111,7 @@
         <h2>Department Info</h2>
 
         <div class="deptLayout">
-          <!-- Box 1 -->
+          <!-- Box 1, Adding department-->
           <div class="deptCard">
             <h2>Add Department</h2>
             <form action="" id="depttForm">
@@ -130,25 +125,55 @@
             </form>
           </div>
 
-          <!-- Box 2 -->
+          <!-- Box 2, Showing departments info -->
           <div class="deptCard">
             <h2>Department Budget Grid</h2>
             <div id="budgetGrid" class="budgetGrid"></div>
-          </div>
-        </div>
-      </div>
 
-      <div id="AllEmpPage" class="page">
-        <h2>All Employees</h2>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Harum, possimus.
+              <div class="depttPagination">
+              <button id="prevvPage">Prev</button>
+              <span id="pageeInfo"></span>
+              <button id="nexttPage">Next</button>
+            </div>
+          </div>
+
+        </div>
       </div>
       <!--Quarterly Report Generator -->
       <section class="reportSection page " id="taxReportGeneration">
-        <h3>Quarterly Tax Report (Web Worker)</h3>
-        <button id="generateReportBtn" class="sideBtn">
-          Generate Quarterly Report
-        </button>
-        <p id="reportStatus">Status: Idle</p>
+        <div id="repHeadings"> 
+          <h3>Quarterly Tax Report (Web Worker)</h3>
+          <p id="reportStatus">Status: Idle</p>
+        </div>
+        <div id="repCom2">
+          <button id="generateReportBtn" class="sideBtn">
+            Generate Quarterly Report
+          </button>
+          <div class="reportFilters">
+    <label>
+      From:
+      <input type="date" id="reportFromDate">
+    </label>
+  
+    <label>
+      To:
+      <input type="date" id="reportToDate">
+    </label>
+  </div>
+  <!-- quaretter selection -->
+   <label>
+  Quarter:
+  <select id="quarterSelect">
+    <option value="">Select Quarter</option>
+    <option value="Q1">Q1 (Jan–Mar)</option>
+    <option value="Q2">Q2 (Apr–Jun)</option>
+    <option value="Q3">Q3 (Jul–Sep)</option>
+    <option value="Q4">Q4 (Oct–Dec)</option>
+  </select>
+</label>
+
+        </div>
+
         <div class="reportBox">
           <pre id="reportOutput">No report yet...</pre>
         </div>
@@ -160,6 +185,7 @@
       <div id="adminHomePage" class="page visible">
         <div id="listOfExpenses">
           <h2>All Submitted Expenses</h2>
+          <!-- Expenses table -->
           <div class="expenseTabs">
             <button class="tabBtn active" data-tab="Pending">Pending</button>
             <button class="tabBtn" data-tab="Approved">Approved</button>
@@ -169,7 +195,6 @@
             <table class="expenseTable">
               <thead>
                 <tr>
-                  <!-- <th>Employee</th> -->
                   <th>UserId</th>
                   <th>Title</th>
                   <th>Amount</th>
@@ -188,9 +213,8 @@
               <button id="nextPage">Next</button>
             </div>
           </div>
-
-
         </div>
+        <!-- Web sockets feed -->
         <section class="auditSection">
           <h3>Live Audit Feed (WebSockets) </h3>
           <div class="auditHeader">
@@ -201,9 +225,9 @@
           </div>
           <!--TERMINAL LOG -->
           <div id="auditTerminal" class="auditTerminal"></div>
-          <!-- <ul id="auditFeedList" class="auditFeedList"></ul> -->
         </section>
 
+        <!-- SSE bOX -->
         <section class="exchangeSection">
           <h3>Global Exchange Rates (SSE)</h3>
           <p id="sseState">SSE: Disconnected</p>
@@ -214,13 +238,11 @@
           <p><b>USD → JPY:</b> <span id="usdJpy">—</span></p>
           <small id="ratesUpdatedAt">Last update: —</small>
         </section>
-
       </div>
 
     </div>
-    <!-- TOAST NOTIFICATION -->
-
   </div>
+  <!-- TOAST NOTIFICATION -->
   <div id="toastContainer"></div>
 
   <!-- audit notes modal -->

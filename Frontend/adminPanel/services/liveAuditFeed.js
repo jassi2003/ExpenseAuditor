@@ -1,7 +1,7 @@
 export function startLiveAuditFeed({
   url = "ws://localhost:5000/ws/audit",
-  onEvent = () => {},
-  onState = () => {},
+  onEvent = () => { },
+  onState = () => { },
   heartbeatMs = 15000,
   pongTimeoutMs = 6000,
   maxReconnectDelay = 30000,
@@ -14,10 +14,12 @@ export function startLiveAuditFeed({
 
   let reconnectAttempt = 0;
 
+  //it tells the conenection state
   function logState(state) {
     onState({ state, attempt: reconnectAttempt });
   }
 
+  //its a timer cleaneup, runs on disconnect,before reconnect,onstop
   function cleanup() {
     if (heartbeatTimer) clearInterval(heartbeatTimer);
     if (pongTimer) clearTimeout(pongTimer);
@@ -25,9 +27,10 @@ export function startLiveAuditFeed({
     pongTimer = null;
   }
 
+
   function startHeartbeat() {
     cleanup();
-//detecting dead connections, checking whther sockets open or dead
+    //detecting dead connections, checking whther sockets open or dead
     heartbeatTimer = setInterval(() => {
       if (!ws || ws.readyState !== WebSocket.OPEN) return;
 
@@ -36,7 +39,7 @@ export function startLiveAuditFeed({
       pongTimer = setTimeout(() => {
         try {
           ws.close();
-        } catch {}
+        } catch { }
       }, pongTimeoutMs);
     }, heartbeatMs);
   }
@@ -54,36 +57,38 @@ export function startLiveAuditFeed({
     }, delay);
   }
 
+
+
+
   function connect() {
     if (stopped) return;
 
     logState("connecting");
 
     ws = new WebSocket(url);
-
     ws.onopen = () => {
-      reconnectAttempt = 0;
+      reconnectAttempt = 0; //when the request gets open it resets the attempt
       logState("online");
       startHeartbeat();
     };
 
-    ws.onmessage = (e) => {
+    ws.onmessage = (e) => {   //it triggers when backend sends message
       try {
         const data = JSON.parse(e.data);
 
         if (data.type === "PONG") {
-          if (pongTimer) clearTimeout(pongTimer);
+          if (pongTimer) clearTimeout(pongTimer);  //if server responded, connection healthy, reset pong timer
           pongTimer = null;
           return;
         }
 
-        // audit event from backend
+        // audit event from backend like expense submitted, admin approving expense
         if (data.type === "AUDIT_EVENT") {
           onEvent(data.payload);
           return;
         }
       } catch {
-//ignoring invalid json
+        //ignoring invalid json
       }
     };
 
@@ -101,6 +106,7 @@ export function startLiveAuditFeed({
   // start
   connect();
 
+  
   return {
     send(data) {
       if (!ws || ws.readyState !== WebSocket.OPEN) return false;
@@ -110,7 +116,7 @@ export function startLiveAuditFeed({
     stop() {
       stopped = true;
       cleanup();
-      try { ws?.close(); } catch {}
+      try { ws?.close(); } catch { }
     },
   };
 }

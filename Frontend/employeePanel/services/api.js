@@ -13,7 +13,7 @@ export async function postExpenseToServer(expense) {
     JSON.stringify({
       id: expense.id, 
       title: expense.title,
-      amount: expense.amount,
+      amountINR: expense.amountINR,
       department: expense.department,
       date: expense.date,
       tag: expense.tag,

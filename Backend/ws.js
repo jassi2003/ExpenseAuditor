@@ -6,6 +6,8 @@ function setupAuditWebSocket(server) {
     server,
     path: "/ws/audit",
   });
+
+  //it fires when admin connects
   wss.on("connection", (ws) => {
   console.log("Admin WS connected");
 });
@@ -13,12 +15,14 @@ function setupAuditWebSocket(server) {
 
   const clients = new Set();
 
+  //it sends same audit message to all connected admins
   function broadcastAuditEvent(payload) {
     const msg = JSON.stringify({
       type: "AUDIT_EVENT",
       payload,
     });
 
+    //it loops over all connected admins and sends the message
     for (const ws of clients) {
       if (ws.readyState === 1) {
         ws.send(msg);
@@ -26,6 +30,8 @@ function setupAuditWebSocket(server) {
     }
   }
 
+
+  //it runs once per admin connection
   wss.on("connection", (ws) => {
     clients.add(ws);
     // welcome
@@ -36,6 +42,7 @@ function setupAuditWebSocket(server) {
       })
     );
 
+    //it triggeres when admin sends something,then converts buffer to string
     ws.on("message", (buffer) => {
       try {
         const data = JSON.parse(buffer.toString());

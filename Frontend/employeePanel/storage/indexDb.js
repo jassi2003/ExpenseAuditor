@@ -73,6 +73,7 @@ export async function getAllExpenses() {
     })
 }
 
+
 //updating the expense
 export async function updateExpense(updatedExpense) {
     const db = await openDb();
@@ -135,13 +136,15 @@ export async function removeQueuedExpense(id) {
     return new Promise((resolve, reject) => {
         const txn = db.transaction(OfflineExpenseStore, "readwrite")
         const store = txn.objectStore(OfflineExpenseStore)
-        const req = store.delete(id)
-        req.oncomplete = () => resolve(true);
-        req.onerror = () => reject(tx.error);
+      const  req = store.delete(id)
+          req.onerror = () => reject(req.error);
 
+         txn.oncomplete = () => resolve(true);
+        txn.onerror = () => reject(tx.error);
+            txn.onabort = () => reject(txn.error);
 
     })
-}
+}  
 
 
 //adding department info
@@ -214,7 +217,7 @@ export async function approveExpense(expId) {
     const expenseStore = txn.objectStore("expenses");
     const depttStore = txn.objectStore("departments");
 
-    //  get expense
+    //get expense
     const getExpReq = expenseStore.get(expId);
 
     getExpReq.onerror = () => reject("Failed to fetch expense");
@@ -279,18 +282,17 @@ export async function approveExpense(expId) {
       };
 
     };
-
     txn.oncomplete = () => {
       db.close();
       resolve(true);
     };
-
     txn.onerror = () => {
       db.close();
       reject(txn.error?.message || "Transaction failed");
     };
   });
 }
+
 //reject the expense
 export async function rejectExpense(expenseId) {
   const db = await openDb();
@@ -321,3 +323,23 @@ export async function rejectExpense(expenseId) {
     txn.onerror = () => reject(txn.error);
   });
 }
+
+
+
+
+export async function getExpenseById(id) {
+  const db = await openDb();
+
+  return new Promise((resolve, reject) => {
+    const txn = db.transaction(ExpenseStore, "readonly");
+    const store = txn.objectStore(ExpenseStore);
+
+    const req = store.get(id);
+
+    req.onsuccess = () => resolve(req.result || null);
+    req.onerror = () => reject(req.error);
+
+    txn.oncomplete = () => db.close();
+  });
+}
+

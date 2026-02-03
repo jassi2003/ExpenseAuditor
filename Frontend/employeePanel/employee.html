@@ -24,7 +24,15 @@
 
     <div class="parent">
 
+       <!-- Long pooling LED -->
+  <div class="statusRow">
+       <span id="ledLP" class="led red"></span>
+       <span class="statusLabel">LP:</span>
+       <span id="metaLP" class="statusMeta">Idle</span>
+     </div>
+
     <h2>Employee panel</h2>
+    
 <div class="topRightControls">
   <div id="currencySelector">
     <label>Select Currency</label>
@@ -35,14 +43,17 @@
       <option value="GBP">GBP (£)</option>
     </select>
   </div>
-
+  
   <button id="diagBtn" class="diagBtn">Run Diagnostic Console</button>
+
 </div>
 
 
+<!-- ADD EXPENSE FORM -->
       <div id="addExpensePage" class="page visible">
-<form id="expenseForm" action="javascript:void(0);" novalidate>
-          
+        
+        <form id="expenseForm">
+  <p id="status"></p>
           <label>Expense Title</label>
           <input type="text" id="formTitle" placeholder="enter title">
           <label for="">Select Currency</label>
@@ -86,12 +97,13 @@
           <button id="sbtBtn" type="submit">Submit</button>
           <button type="button" id="clearDraftBtn">Clear Draft</button>
 
-          <p id="status"></p>
         </form>
       </div>
 
       <!-- HOME PAGE -->
       <div id="homePage" class="page">
+
+ 
 
  <!--  Offline Queue Badge + Sync Message -->
 <div class="offlineBox">

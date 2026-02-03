@@ -1,18 +1,12 @@
 // controllers/employeeControllers.js
 
-import {
-  addExpense,
-  getAllExpenses,
-  AddQueueExpense,
-  updateExpense,
-  deleteExpense,
-  getQueuedExpense
-} from "../storage/indexDb.js";
+import {addExpense,getAllExpenses,AddQueueExpense,updateExpense,deleteExpense,getQueuedExpense} from "../storage/indexDb.js";
 
 import { saveDraft, loadDraft, clearDraft } from "../storage/sessionStorage.js";
 import { postExpenseToServer } from "../services/api.js";
 import { drainQueue } from "../services/syncService.js";
 import { ExpenseDraftModel } from "../../models/expenseModel.js";
+import { setMatrix } from "../../adminPanel/controllers/adminController.js";
 
 
 /*  STATE */
@@ -24,11 +18,6 @@ const PAGE_SIZE = 5;
 
 let activeTagFilter = null;
 const globalTagSet = new Set();
-
-
-// HELPERS
-
-
 
 /* DIAGNOSTIC */
 export function runDiagnosticConsole() {
@@ -63,7 +52,6 @@ export function initHashRouting(homePage, addPage, homeBtn, addBtn) {
 }
 
 /* CURRENCY SSE*/
-
 export function startRateStream() {
   const src = new EventSource("http://localhost:5000/api/conversion/rates/inr-stream");
   src.addEventListener("rates", e => {
@@ -102,11 +90,11 @@ export function setCurrency(cur, rerender) {
 
 /* TAGS FUNCTIONALITY */
 export function normalizeTag(t) {
-  return t ? "#" + t.replace(/^#+/, "").toLowerCase() : "";
+  return t ? "#" + t.replace(/^#+/, "").toLowerCase() : "";  //this removes leading hash, one or more hash and add hash in fornt of tags
 }
 
 export function parseTags(str = "") {
-  return str.split(/[,\s]+/).map(normalizeTag).filter(Boolean);
+  return str.split(/[,\s]+/).map(normalizeTag).filter(Boolean);  //splitting the tag by comms or whitespace
 }
 
 export async function rebuildTags(renderTags) {
@@ -122,6 +110,7 @@ export function setActiveTag(tag, rerender) {
   rerender();
 }
 
+
 /* OFFLINE  */
 export async function updateOfflineBadge(el) {
   el.textContent = (await getQueuedExpense()).length;
@@ -134,7 +123,7 @@ export async function syncOffline(setStatus) {
 export function restoreDraft(setters) {
   const d = loadDraft();
   if (!d) return;
- Object.entries(setters).forEach(([key, setValue]) => {
+  Object.entries(setters).forEach(([key, setValue]) => {
     setValue(d[key] ?? "");
   });
 }
@@ -148,8 +137,8 @@ export function saveDraftForm(data) {
 /*  CRUD, submitting the expense*/
 export async function submitExpense(expense, setStatus) {
   if (expense.id && expense._edit) {
-      expense.status = "Pending"; 
-        expense.updatedAt = Date.now();
+    expense.status = "Pending";
+    expense.updatedAt = Date.now();
     await updateExpense(expense);
   } else {
     await addExpense(expense);
@@ -159,11 +148,11 @@ export async function submitExpense(expense, setStatus) {
   if (navigator.onLine) {
     await postExpenseToServer(expense);
     setStatus("Synced. Waiting for approval...");
-       return expense.id;
-} 
+    return expense.id;
+  }
 
-else {
-    await AddQueueExpense({
+  else {
+    await AddQueueExpense({  //if offline add it to offline expense store
       queueId: crypto.randomUUID(),
       expense,
       createdAt: new Date().toISOString()
@@ -173,16 +162,17 @@ else {
   }
 }
 
+
+//DELETING THE EXPENSE
 export async function deleteExpenseById(id) {
   await deleteExpense(id);
-   const expenses = await getAllExpenses();
+  const expenses = await getAllExpenses();
   const maxPage = Math.ceil(expenses.length / PAGE_SIZE);
 
   if (currentPage > maxPage) {
     currentPage = maxPage || 1;
   }
   window.dispatchEvent(new Event("queue:changed"));
-
 }
 
 export async function toggleFlag(id) {
@@ -192,12 +182,11 @@ export async function toggleFlag(id) {
 }
 
 /* LIST,PAGINATION  */
-
 export async function getPaginatedExpenses() {
   let expenses = await getAllExpenses();
-  
+
   //sorting the expenses
-   expenses.sort((a, b) => {
+  expenses.sort((a, b) => {
     const timeA = a.updatedAt ?? a.createdAt ?? 0;
     const timeB = b.updatedAt ?? b.createdAt ?? 0;
     return timeB - timeA;
@@ -252,35 +241,33 @@ export function setTab(tab, rerender) {
 
 
 
+
 export async function afterMutation(render, rebuildTags) {
   await rebuildTags();
   currentPage = 1;
   render();
 }
 
+const matrixRefs = {
+  LP: {
+    led: document.querySelector("#ledLP"),
+    meta: document.querySelector("#metaLP"),
+  }
+};
 
 
 //LONG POOL
 //  LONG POLLING FOR APPROVAL (30s max per request)
 export async function longPollApproval(expenseId, onUpdate) {
   try {
-    const controller = new AbortController();
-
-    // 30s timeout
-    const timeoutId = setTimeout(() => {
-      controller.abort();
-    }, 30000);
-
+    setMatrix("LP", "checking", "waiting for approval...", matrixRefs)
     const res = await fetch(
-      `http://localhost:5000/${expenseId}/long-poll`,
-      { signal: controller.signal }
-    );
+      `http://localhost:5000/api/longPool/${expenseId}/long-poll`);
 
-    clearTimeout(timeoutId);
-
-    // no decision yet → server says "keep waiting"
+    // no decision yet => server responds "keep waiting"
     if (res.status === 204) {
       onUpdate?.("No response yet... checking again");
+      setMatrix("LP", "checking", "Still waiting...", matrixRefs);
       return longPollApproval(expenseId, onUpdate);
     }
 
@@ -288,26 +275,29 @@ export async function longPollApproval(expenseId, onUpdate) {
 
     if (data?.status === "Approved") {
       onUpdate?.(" Manager approved your expense!");
+      setMatrix("LP", "online", "Approved", matrixRefs);
+
     } else if (data?.status === "Rejected") {
       onUpdate?.(" Manager rejected the expense");
+      setMatrix("LP", "online", "Rejected", matrixRefs);
+
     } else {
       onUpdate?.(" Waiting for decision...");
+      setMatrix("LP", "checking", "Waiting...", matrixRefs);
       return longPollApproval(expenseId, onUpdate);
     }
 
     return data;
 
   } catch (err) {
-    if (err.name === "AbortError") {
-      onUpdate?.(" Approval timed out. Will retry later.");
-      return;
-    }
-
     console.error("Long polling failed:", err);
-    onUpdate?.("Network error. Retrying in 5s...");
-    setTimeout(() =>
-      longPollApproval(expenseId, onUpdate),
-      5000
-    );
+    setMatrix("LP", "offline", "Connection error", matrixRefs);
+
+    setTimeout(() => {
+      setMatrix("LP", "checking", "Retrying...", matrixRefs);
+      longPollApproval(expenseId, onUpdate)
+    },5000);
+
   }
 }
+

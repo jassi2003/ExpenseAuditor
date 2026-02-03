@@ -1,22 +1,8 @@
 // controllers/adminController.js
-
-import {
-  addEmployee,
-  getAllUsers
-} from "../../loginPage/storage/indexDb.js";
-
-import {
-  getAllExpenses,
-  addDepartmentInfo,
-  approveExpense,
-  rejectExpense,
-  getDepartmentInfo
-} from "../../employeePanel/storage/indexDb.js";
-
+import {addEmployee,getAllUsers} from "../../loginPage/storage/indexDb.js";
+import {getAllExpenses,addDepartmentInfo,approveExpense,rejectExpense,getDepartmentInfo} from "../../employeePanel/storage/indexDb.js";
 import { startConnectivityAuditor } from "../../services/connectivityAuditor.js";
 import { startLiveAuditFeed } from "../services/liveAuditFeed.js";
-
-
 
 
 export async function afterAdminMutation({
@@ -35,21 +21,18 @@ export async function afterAdminMutation({
 /* NAVIGATION */
 export function showAdminPage(page, refs) {
   const { pages, buttons } = refs;
-  // hide all pages
-  Object.values(pages).forEach(p => p.classList.remove("visible"));
-  // deactivate all buttons
-  Object.values(buttons).forEach(b => b.classList.remove("active"));
-  // show selected page
-  pages[page]?.classList.add("visible");
-  // activate selected button
-  buttons[page]?.classList.add("active");
-  // sync hash
-  window.location.hash = page;
+
+  Object.values(pages).forEach(p => p.classList.remove("visible"));   // hiding all pages
+  Object.values(buttons).forEach(b => b.classList.remove("active"));     // deactivate all buttons
+  pages[page]?.classList.add("visible");     // show selected page
+  buttons[page]?.classList.add("active");      // activating selected button
+  window.location.hash = page;     // syncing hash
 }
 export function getPageFromHash(defaultPage = "home") {
   const page = window.location.hash.replace("#", "");
   return page || defaultPage;
 }
+
 
 export function initHashRouting(homePage, addPage, homeBtn, addBtn) {
   const handle = () => {
@@ -59,13 +42,6 @@ export function initHashRouting(homePage, addPage, homeBtn, addBtn) {
   handle();
   window.addEventListener("hashchange", handle);
 }
-
-
-/* STATE*/
-
-let currentTab = "Pending";
-let currentPage = 1;
-const PAGE_SIZE = 5;
 
 // current tab setting
 export function setTab(tab, rerender) {
@@ -98,6 +74,7 @@ export function validateStrongPassword(password) {
   }
   return "";
 }
+
 
 
 /*
@@ -147,6 +124,7 @@ export async function renderBudgetGrid({ budgetGrid }) {
   });
 }
 
+
 export async function addDepartment(info) {
   const newDeptName = info.depttname.trim().toLowerCase();
   // fetch existing departments
@@ -189,20 +167,19 @@ export async function loadDepartments(selectEl) {
 }
 
 
-
 /*EXPENSE LIST + PAGINATION*/
+let currentTab = "Pending";
+let currentPage = 1;
+const PAGE_SIZE = 6;
+
 export async function getPaginatedExpenses() {
   let expenses = await getAllExpenses();
-//   if (currentTab === "Pending") {
-//     expenses = expenses.filter(e => e.status === "Pending");
-//   } else if (currentTab === "approved") {
-//     expenses = expenses.filter(e => e.status === "Approved");
-//   } else if (currentTab === "rejected") {
-//     expenses = expenses.filter(e => e.status === "Rejected");
-//   }
-
+    expenses.sort((a, b) => {
+    const timeA = a.updatedAt ?? a.createdAt ?? 0;
+    const timeB = b.updatedAt ?? b.createdAt ?? 0;
+    return timeB - timeA;
+  });
   expenses = expenses.filter(e => e.status === currentTab);
-
   const totalPages = Math.ceil(expenses.length / PAGE_SIZE) || 1;
   if (currentPage > totalPages) currentPage = totalPages;
 
@@ -228,12 +205,22 @@ export function prevPage() {
    APPROVE / REJECT the expense
  */
 
-export async function approveExpenseCtrl(id) {
-  await approveExpense(id);
+export async function approveExpenseCtrl(expenseId) {
+    await approveExpense(expenseId);
+
+  //  Notifying backend to resolve employee long-poll
+  await fetch(
+    `http://localhost:5000/api/longPool/${expenseId}/approve`,
+    {method: "POST",}
+  );
 }
 
-export async function rejectExpenseCtrl(id) {
-  await rejectExpense(id);
+export async function rejectExpenseCtrl(expenseId) {
+  await rejectExpense(expenseId);
+   await fetch(
+    `http://localhost:5000/api/longPool/${expenseId}/reject`,
+    {method: "POST",}
+  );
 }
 
 /* 
@@ -307,6 +294,7 @@ export function setMatrix(name, state, msg = "", matrixRefs) {
 export function startAuditFeed(handlers) {
   return startLiveAuditFeed(handlers);
 }
+
 //SHORT POLLING
 export function startShortPolling(cfg) {
   return startConnectivityAuditor(cfg);
@@ -322,15 +310,19 @@ export function startRatesStream({
   onRates,
   onError
 }) {
+
+  //if ratesource is already active, close the connectioon
   if (ratesSource) {
     ratesSource.close();
     ratesSource = null;
   }
+
   onConnecting?.();
   ratesSource = new EventSource(url);
   ratesSource.addEventListener("hello", () => {
     onHello?.();
   });
+
   ratesSource.addEventListener("rates", (e) => {
     try {
       const data = JSON.parse(e.data);
@@ -339,11 +331,13 @@ export function startRatesStream({
       console.error("Invalid SSE data", err);
     }
   });
+
   ratesSource.onerror = () => {
     onError?.();
   };
   return ratesSource;
 }
+//stopping sse
 export function stopRatesStream() {
   if (ratesSource) {
     ratesSource.close();
@@ -352,13 +346,42 @@ export function stopRatesStream() {
 }
 
 
-//BUDGET STATS
 
+
+// DEPARTMENT PAGINATION
+let currPage = 1;
+const PgSize = 4;
+
+export function nextDepttPage(totalPages) {
+  if (currPage < totalPages) currPage++;
+}
+
+export function prevDepttPage() {
+  if (currPage > 1) currPage--;
+}
+export function paginate(items) {
+  const totalPages = Math.max(
+    Math.ceil(items.length / PgSize),
+    1
+  );
+  if (currPage > totalPages) currPage = totalPages;
+  const start = (currPage - 1) * PgSize;
+  const end = start + PgSize;
+  return {
+    items: items.slice(start, end),
+    currPage,
+    totalPages
+  };
+}
+
+
+
+//Department BUDGET STATS
 export async function getDepartmentBudgetStats() {
   const departments = await getDepartmentInfo();
   const expenses = await getAllExpenses();
 
-  // Map: deptKey → consumed amount (Approved only)
+  // Map: deptKey => consumed amount (Approved only)
   const consumedMap = new Map();
 
   expenses.forEach(exp => {
@@ -368,7 +391,7 @@ export async function getDepartmentBudgetStats() {
     const amount = Number(exp.amountINR) || 0;
 
     if (!deptKey) return;
-
+//getting the deptt amt, and adding in amt
     consumedMap.set(deptKey, (consumedMap.get(deptKey) || 0) + amount);
   });
 
@@ -394,6 +417,9 @@ export async function getDepartmentBudgetStats() {
     };
   });
 }
+
+
+
 
 
 
@@ -446,53 +472,51 @@ export function restoreToasts() {
 
 
 // TAX REPORT (WEB WORKER)
-
 let taxWorker = null;
 let latestReport = null;
 
 /* CSV HELPERS */
+// It safely converting any value into a CSV-compatible string, escaping special characters according to CSV rules.
 function escapeCsv(value) {
   if (value === null || value === undefined) return "";
   const str = String(value);
-  return /[,"\n]/.test(str) ? `"${str.replace(/"/g, '""')}"` : str;
+  return /[,"\n]/.test(str) ? `"${str.replace(/"/g, '""')}"` : str;   //If a value contains comma,double quote,newline the value must be wrapped in quotes
 }
 
 function reportToCsv(report) {
   const lines = [];
 
+  // SUMMARY
   lines.push("SECTION,KEY,VALUE");
-  lines.push(`Summary,Quarter,${escapeCsv(report.quarter)}`);
-  lines.push(`Summary,Year,${escapeCsv(report.year)}`);
-  lines.push(`Summary,Total Expenses,${escapeCsv(report.totalExpenses)}`);
-  lines.push(`Summary,Deductible Total,${escapeCsv(report.deductibleTotal)}`);
-  lines.push(`Summary,Expense Count,${escapeCsv(report.count)}`);
-  lines.push(`Summary,Generated At,${escapeCsv(report.generatedAt)}`);
+  lines.push(`From Date,${escapeCsv(report.fromDate)}`);
+  lines.push(`To Date,${escapeCsv(report.toDate)}`);
+  lines.push(`Total Expense Amount,${escapeCsv(report.totalExpenseAmt)}`);
+  lines.push(`Expense Count,${escapeCsv(report.ExpenseCount)}`);
+  lines.push(`Generated At,${escapeCsv(report.generatedAt)}`);
   lines.push("");
 
-  lines.push("SECTION,DEPARTMENT,TOTAL,DEDUCTIBLE,COUNT");
+  // BY DEPARTMENT
+  lines.push("SECTION,DEPARTMENT,TOTAL,COUNT");
   for (const dept in report.byDepartment || {}) {
     const d = report.byDepartment[dept];
     lines.push(
-      `ByDepartment,${escapeCsv(dept)},${escapeCsv(d.total)},${escapeCsv(
-        d.deductible
-      )},${escapeCsv(d.count)}`
+      `ByDepartment,${escapeCsv(dept)},${escapeCsv(d.total)},${escapeCsv(d.count)}`
     );
   }
-
   lines.push("");
 
-  lines.push("SECTION,CATEGORY,TOTAL,DEDUCTIBLE,COUNT");
-  for (const cat in report.byCategory || {}) {
-    const c = report.byCategory[cat];
+  // BY EMPLOYEE
+  lines.push("SECTION,EMPLOYEE,TOTAL,COUNT");
+  for (const emp in report.byEmployee || {}) {
+    const e = report.byEmployee[emp];
     lines.push(
-      `ByCategory,${escapeCsv(cat)},${escapeCsv(c.total)},${escapeCsv(
-        c.deductible
-      )},${escapeCsv(c.count)}`
+      `ByEmployee,${escapeCsv(emp)},${escapeCsv(e.total)},${escapeCsv(e.count)}`
     );
   }
 
   return lines.join("\n");
 }
+
 
 /*FILE DOWNLOAD*/
 function downloadTextFile(filename, text) {
@@ -510,62 +534,124 @@ function downloadTextFile(filename, text) {
 }
 
 
-// Start worker and generate report
+
 export async function generateTaxReport({
   expenses,
-  quarter,
-  year,
+  fromDate,
+  toDate,
   onProgress,
   onDone,
   onError,
 }) {
-  if (taxWorker) taxWorker.terminate();
+  if (taxWorker) taxWorker.terminate();  //it ensures only  one worker runs at a time
 
+  //making new worker thread, and loading webworker
   taxWorker = new Worker(
-    new URL("../../worker/webWorker.js", import.meta.url),
+    new URL("../../worker/webWorker.js", import.meta.url),  //import.meta.url is for locating the worker file.
     { type: "module" }
   );
 
+
+  //its gets called whe worker sends some message using postmessag()
   taxWorker.onmessage = (e) => {
     const { type, payload } = e.data;
-
     if (type === "PROGRESS") {
       onProgress?.(payload);
       return;
     }
-
     if (type === "DONE") {
       latestReport = payload;
       onDone?.(payload);
+      renderReportTable(latestReport)
+
     }
   };
-
   taxWorker.onerror = (err) => {
     console.error("Worker error:", err);
     onError?.(err);
   };
 
-  // SEND REAL DATA ONLY
+  // sending payload to webworker for report generation
   taxWorker.postMessage({
     type: "GENERATE_REPORT",
     payload: {
-      expenses,     // <-- NO duplication
-      quarter,
-      year
+      expenses,
+      fromDate,
+      toDate,
     }
   });
 }
+
+
+//displaying report in tabular format
+export function renderReportTable(report) {
+  return `
+    <h3 class="reportHead">Report Summary</h3>
+    <table class="reportTable">
+      <tr><th>From Date</th><td>${report.fromDate}</td></tr>
+      <tr><th>To Date</th><td>${report.toDate}</td></tr>
+      <tr><th>Total Expense Amount</th><td>₹${report.totalExpenseAmt}</td></tr>
+      <tr><th>Expense Count</th><td>${report.ExpenseCount}</td></tr>
+      <tr><th>Generated At</th><td>${new Date(report.generatedAt).toLocaleString()}</td></tr>
+    </table>
+
+    <h3  class="reportHead">By Department</h3>
+    <table class="reportTable">
+      <thead>
+        <tr>
+          <th>Department</th>
+          <th>Total Amount</th>
+          <th>Expense Count</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${Object.entries(report.byDepartment).map(([dept, d]) => `
+          <tr>
+            <td>${dept}</td>
+            <td>₹${d.total}</td>
+            <td>${d.count}</td>
+          </tr>
+        `).join("")}
+      </tbody>
+    </table>
+
+    <h3  class="reportHead">By Employee</h3>
+    <table class="reportTable">
+      <thead>
+        <tr>
+          <th>Employee</th>
+          <th>Total Amount</th>
+          <th>Expense Count</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${Object.entries(report.byEmployee).map(([emp, e]) => `
+          <tr>
+            <td>${emp}</td>
+            <td>₹${e.total}</td>
+            <td>${e.count}</td>
+          </tr>
+        `).join("")}
+      </tbody>
+    </table>
+  `;
+}
+
 
 
 // Download last generated report
 export  function downloadLatestTaxReport() {
   if (!latestReport) return false;
 
+
   const csv = reportToCsv(latestReport);
   const filename = `Quarterly_Tax_Report_${latestReport.quarter}_${latestReport.year}.csv`;
   downloadTextFile(filename, csv);
   return true;
 }
+
+
+
 
 
 

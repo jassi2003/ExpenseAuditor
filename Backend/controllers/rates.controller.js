@@ -3,19 +3,21 @@
 const FRANKFURTER_URL =
   "https://api.frankfurter.dev/v1/latest?from=USD&to=INR,EUR,GBP,JPY";
 
-// helper: SSE message writer
+// SSE message writer(sending res to frontend)
 function sendSse(res, event, dataObj) {
   res.write(`event: ${event}\n`);
   res.write(`data: ${JSON.stringify(dataObj)}\n\n`);
 }
 
+
+//api fetching real rates
 async function fetchRealUsdRates() {
   const r = await fetch(FRANKFURTER_URL);
   if (!r.ok) {
     throw new Error(`Rates API failed: ${r.status}`);
   }
-
   const json = await r.json();
+
 
   // normalizing payload for frontend
   return {
@@ -26,15 +28,12 @@ async function fetchRealUsdRates() {
   };
 }
 
-/*
-  SSE Controller
- GET /api/rates/stream
- */
 function streamExchangeRates(req, res) {
-  res.setHeader("Content-Type", "text/event-stream");
+  res.setHeader("Content-Type", "text/event-stream"); //telling the browser that its a sse stream
   res.setHeader("Cache-Control", "no-cache");
-  res.setHeader("Connection", "keep-alive");
+  res.setHeader("Connection", "keep-alive"); //keeping alive the req after res
 
+//Immediately sending headers to the browser or client.
   if (res.flushHeaders) res.flushHeaders();
 
   // hello event (initial)
@@ -63,7 +62,7 @@ function streamExchangeRates(req, res) {
     }
   }, 5000);
 
-  // sending once immediately so UI updates instantly
+  // sending data once immediately so UI updates instantly and cant wait for 5s
   (async () => {
     try {
       const payload = await fetchRealUsdRates();
